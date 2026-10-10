@@ -1,41 +1,52 @@
+export type TierId = "free" | "pro" | "elite" | "locked";
+
 const TRIAL_KEY = "tb_trial_start";
 const TIER_KEY = "tb_tier";
+const ONBOARD_KEY = "tb_onboard";
 const SPLASH_KEY = "tb_splash_seen";
-const ONBOARD_KEY = "tb_onboard_done";
+const TRIAL_DAYS = 7;
 
-export type Tier = "free" | "pro" | "elite" | "locked";
+export function getTrialStart(): number | null {
+  if (typeof window === "undefined") return null;
+  const v = localStorage.getItem(TRIAL_KEY);
+  return v ? Number(v) : null;
+}
 
-export function startTrial() {
+export function startTrial(): void {
   if (typeof window === "undefined") return;
   if (!localStorage.getItem(TRIAL_KEY)) {
-    localStorage.setItem(TRIAL_KEY, Date.now().toString());
+    localStorage.setItem(TRIAL_KEY, String(Date.now()));
     localStorage.setItem(TIER_KEY, "free");
   }
 }
 
-export function daysLeftInTrial(): number {
-  if (typeof window === "undefined") return 7;
-  const start = localStorage.getItem(TRIAL_KEY);
-  if (!start) return 7;
-  const elapsed = Date.now() - Number(start);
-  const days = 7 - Math.floor(elapsed / (1000 * 60 * 60 * 24));
-  return Math.max(0, days);
-}
-
-export function getTier(): Tier {
+export function getTier(): TierId {
   if (typeof window === "undefined") return "free";
-  const t = localStorage.getItem(TIER_KEY) as Tier | null;
-  if (!t) return "free";
-  if (t === "free" && daysLeftInTrial() <= 0) {
+  const stored = localStorage.getItem(TIER_KEY) as TierId | null;
+  if (stored === "pro" || stored === "elite") return stored;
+  const start = getTrialStart();
+  if (!start) return "free";
+  const days = (Date.now() - start) / (1000 * 60 * 60 * 24);
+  if (days > TRIAL_DAYS) {
     localStorage.setItem(TIER_KEY, "locked");
     return "locked";
   }
-  return t;
+  return "free";
 }
 
-export function setTier(tier: Tier) {
+export function setTier(tier: TierId) {
   if (typeof window === "undefined") return;
   localStorage.setItem(TIER_KEY, tier);
+}
+
+export function isOnboardingDone(): boolean {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem(ONBOARD_KEY) === "1";
+}
+
+export function completeOnboarding() {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(ONBOARD_KEY, "1");
 }
 
 export function hasSeenSplash(): boolean {
@@ -48,12 +59,9 @@ export function markSplashSeen() {
   localStorage.setItem(SPLASH_KEY, "1");
 }
 
-export function isOnboardingDone(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(ONBOARD_KEY) === "1";
-}
-
-export function completeOnboarding() {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(ONBOARD_KEY, "1");
+export function daysLeftInTrial(): number {
+  const start = getTrialStart();
+  if (!start) return TRIAL_DAYS;
+  const days = (Date.now() - start) / (1000 * 60 * 60 * 24);
+  return Math.max(0, Math.ceil(TRIAL_DAYS - days));
 }
