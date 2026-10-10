@@ -30,3 +30,26 @@ body {
 .glow-green {
   box-shadow: 0 0 16px rgba(52, 211, 153, 0.3);
 }
+
+/* Claymorphism */
+.clay {
+  background: #18181b;
+  border-radius: 1.25rem;
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.45),
+    -4px -4px 12px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.clay-inset {
+  background: #0c0c0e;
+  border-radius: 1rem;
+  box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.5), inset -2px -2px 6px rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.clay-btn {
+  background: linear-gradient(145deg, #1f1f23, #141416);
+  border-radius: 9999px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), -2px -2px 6px rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
